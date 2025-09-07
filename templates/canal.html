@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Taxa de Conversão por Canal</title>
+</head>
+<body>
+    <p><a href="{{ url_for('logout') }}">Sair</a></p>
+    <h1>📈 Taxa de Conversão por Canal</h1>
+
+    <!-- Formulário único com todos os filtros -->
+    <form method="GET" action="{{ url_for('canal') }}">
+        <fieldset>
+            <legend>Filtros</legend>
+
+            <label for="canal">Canal:</label>
+            <select name="canal" id="canal">
+                <option value="">Todos os canais</option>
+                {% for canal in canais %}
+                    <option value="{{ canal }}" {% if canal == canal_selecionado %}selected{% endif %}>{{ canal }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="mes">Mês:</label>
+            <select name="mes" id="mes">
+                <option value="">Todos os meses</option>
+                {% for m in meses %}
+                    <option value="{{ m }}" {% if m == mes_selecionado %}selected{% endif %}>{{ m }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="min_taxa">Taxa mínima:</label>
+            <input type="number" step="0.01" name="min_taxa" id="min_taxa" value="{{ min_taxa or '' }}">
+
+            <label for="max_taxa">Taxa máxima:</label>
+            <input type="number" step="0.01" name="max_taxa" id="max_taxa" value="{{ max_taxa or '' }}">
+        </fieldset>
+
+        <button type="submit">Filtrar</button>
+        <button type="submit" formaction="{{ url_for('exportar') }}">Exportar CSV</button>
+    </form>
+
+    <!-- Gráfico interativo -->
+    <div>{{ grafico_html | safe }}</div>
+
+    <!-- Lista de taxas por canal -->
+    <ul>
+        {% for canal, taxa in taxa_por_canal.items() %}
+            <li><strong>{{ canal }}:</strong> {{ taxa }}</li>
+        {% endfor %}
+    </ul>
+
+    <p><a href="{{ url_for('index') }}">← Voltar à média geral</a></p>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard de Conversão</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f9f9f9;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .grafico {
+            margin-top: 20px;
+        }
+        .canal {
+            margin-top: 30px;
+        }
+        .canal p {
+            margin: 5px 0;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #0077cc;
+        }
+    </style>
+</head>
+<body>
+    <h1>📊 Média de Conversão</h1>
+    <p><strong>{{ media }}</strong></p>
+
+    <div class="grafico">
+        <h2>Distribuição da Taxa de Conversão</h2>
+        <img src="{{ url_for('static', filename='histograma.png') }}" alt="Histograma">
+    </div>
+
+    <h1><a href="{{ url_for('canal') }}">Ver Taxa por Canal →</a></h1>
+</body>
+</html>

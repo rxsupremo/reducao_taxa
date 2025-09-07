@@ -1,0 +1,6 @@
+unittest
+pandas
+Flask
+pandas
+plotly
+gunicorn
