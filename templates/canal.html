@@ -2,54 +2,76 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taxa de Conversão por Canal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <p><a href="{{ url_for('logout') }}">Sair</a></p>
-    <h1>📈 Taxa de Conversão por Canal</h1>
+<body class="bg-gray-100 font-sans text-gray-800">
+    <header class="bg-gradient-to-r from-blue-800 to-blue-600 text-white py-6 text-center">
+        <div class="flex justify-end pr-6">
+            <a href="{{ url_for('logout') }}" class="text-white font-semibold hover:text-gray-200 transition duration-300">Sair</a>
+        </div>
+        <h1 class="text-3xl font-bold">📈 Taxa de Conversão por Canal</h1>
+    </header>
 
-    <!-- Formulário único com todos os filtros -->
-    <form method="GET" action="{{ url_for('canal') }}">
-        <fieldset>
-            <legend>Filtros</legend>
+    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <section class="bg-white shadow-lg rounded-lg p-6 mb-8">
+            <form method="GET" action="{{ url_for('canal') }}" class="flex flex-row flex-wrap gap-4 items-end">
+                <fieldset class="border border-gray-300 rounded-lg p-4 flex flex-row flex-wrap gap-4 items-end">
+                    <legend class="text-lg font-semibold text-gray-700">Filtros</legend>
+                    <div class="min-w-[150px]">
+                        <label for="canal" class="block text-sm font-medium text-gray-600">Canal:</label>
+                        <select name="canal" id="canal" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Todos os canais</option>
+                            {% for canal in canais %}
+                                <option value="{{ canal }}" {% if canal == canal_selecionado %}selected{% endif %}>{{ canal }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-            <label for="canal">Canal:</label>
-            <select name="canal" id="canal">
-                <option value="">Todos os canais</option>
-                {% for canal in canais %}
-                    <option value="{{ canal }}" {% if canal == canal_selecionado %}selected{% endif %}>{{ canal }}</option>
+                    <div class="min-w-[150px]">
+                        <label for="mes" class="block text-sm font-medium text-gray-600">Mês:</label>
+                        <select name="mes" id="mes" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Todos os meses</option>
+                            {% for m in meses %}
+                                <option value="{{ m }}" {% if m == mes_selecionado %}selected{% endif %}>{{ m }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="min-w-[120px]">
+                        <label for="min_taxa" class="block text-sm font-medium text-gray-600">Taxa mínima:</label>
+                        <input type="number" step="0.01" name="min_taxa" id="min_taxa" value="{{ min_taxa or '' }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <div class="min-w-[120px]">
+                        <label for="max_taxa" class="block text-sm font-medium text-gray-600">Taxa máxima:</label>
+                        <input type="number" step="0.01" name="max_taxa" id="max_taxa" value="{{ max_taxa or '' }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300">Filtrar</button>
+                        <button type="submit" formaction="{{ url_for('exportar') }}" class="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-700 transition duration-300">Exportar CSV</button>
+                    </div>
+                </fieldset>
+            </form>
+        </section>
+
+        <section class="bg-white shadow-lg rounded-lg p-6 mb-8">
+            <div>{{ grafico_html | safe }}</div>
+        </section>
+
+        <section class="bg-white shadow-lg rounded-lg p-6">
+            <ul class="list-disc pl-6">
+                {% for canal, taxa in taxa_por_canal.items() %}
+                    <li class="mb-2"><strong>{{ canal }}:</strong> {{ taxa }}</li>
                 {% endfor %}
-            </select>
+            </ul>
+        </section>
 
-            <label for="mes">Mês:</label>
-            <select name="mes" id="mes">
-                <option value="">Todos os meses</option>
-                {% for m in meses %}
-                    <option value="{{ m }}" {% if m == mes_selecionado %}selected{% endif %}>{{ m }}</option>
-                {% endfor %}
-            </select>
-
-            <label for="min_taxa">Taxa mínima:</label>
-            <input type="number" step="0.01" name="min_taxa" id="min_taxa" value="{{ min_taxa or '' }}">
-
-            <label for="max_taxa">Taxa máxima:</label>
-            <input type="number" step="0.01" name="max_taxa" id="max_taxa" value="{{ max_taxa or '' }}">
-        </fieldset>
-
-        <button type="submit">Filtrar</button>
-        <button type="submit" formaction="{{ url_for('exportar') }}">Exportar CSV</button>
-    </form>
-
-    <!-- Gráfico interativo -->
-    <div>{{ grafico_html | safe }}</div>
-
-    <!-- Lista de taxas por canal -->
-    <ul>
-        {% for canal, taxa in taxa_por_canal.items() %}
-            <li><strong>{{ canal }}:</strong> {{ taxa }}</li>
-        {% endfor %}
-    </ul>
-
-    <p><a href="{{ url_for('index') }}">← Voltar à média geral</a></p>
+        <div class="mt-8 text-center">
+            <a href="{{ url_for('index') }}" class="inline-block text-blue-600 font-semibold hover:text-blue-800 transition duration-300">← Voltar à média geral</a>
+        </div>
+    </main>
 </body>
 </html>
